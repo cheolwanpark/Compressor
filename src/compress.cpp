@@ -14,8 +14,9 @@ void decompress_lzss(const char *src, const char *dst);
 
 void push(buf &buf, byte* data, size_t len);
 const char *LZSS_HEADER_SYMBOL = "CLSS";
-void lzss(byte *rbuf, size_t len, buf &w);
+void lzss(byte *rbuf, size_t len, buf &r);
 void dlzss(byte *rbuf, size_t len, buf &d);
+
 const char *helpstr();
 
 int main(int argc, char *argv[])
@@ -43,6 +44,10 @@ int main(int argc, char *argv[])
         {
             compress_lzss(argv[3], argv[4]);
         }
+        // else if(!strcmp(argv[2], "huffman"))
+        // {
+        //     compress_huffman(argv[3], argv[4]);
+        // }
         else
         {
             printf("invalid compress method\n");
@@ -79,27 +84,24 @@ void compress_lzss(const char *src, const char *dst)
     printf("src file : %s\nfilesize : %lu\n", src, fs);
     
     // ready result buffer for lzss
-    buf w = {0, 0, 0};
-    w.mem = (byte*)malloc((w.max=32*1024));
-    memset(w.mem, 0, w.max);
-    push(w, (byte*)LZSS_HEADER_SYMBOL, 4);
-    push(w, (byte*)&fs, 8);
-    // read buffer
+    buf r = {0, 0, 0};
+    r.mem = (byte*)malloc((r.max=32*1024));
+    memset(r.mem, 0, r.max);
+    // read file
     byte *rbuf = (byte*)malloc(fs);
     fread(rbuf, 1, fs, f);
     fclose(f); f=0;
-
     // compress
-    lzss(rbuf, fs, w);
+    lzss(rbuf, fs, r);
     free(rbuf); rbuf=0;
 
     // write compressed data to dst file
     f = fopen(dst, "wb");
-    fwrite(w.mem, 1, w.len, f);
+    fwrite(r.mem, 1, r.len, f);
     printf("compressed %ul -> %ul\n", fs, ftell(f));
     fclose(f);
 
-    free(w.mem);
+    free(r.mem);
 }
 
 void decompress_lzss(const char *src, const char *dst)
@@ -154,9 +156,13 @@ void push(buf &buf, byte* data, size_t len)
     buf.len += len;
 }
 
-void lzss(byte *rbuf, size_t len, buf &w)
+void lzss(byte *rbuf, size_t len, buf &r)
 {
     const int MIN_COMPRESS_LEN = 4;
+
+    // push head data
+    push(r, (byte*)LZSS_HEADER_SYMBOL, 4);
+    push(r, (byte*)&len, 8);
 
     // data struct
     struct {
@@ -207,8 +213,7 @@ void lzss(byte *rbuf, size_t len, buf &w)
                     // check found pattern is the longest pattern
                     if(t.l > d.l)
                     {
-                        d.p = t.p;
-                        d.l = t.l;
+                        d = t;
                     }
                 }
             }
@@ -227,8 +232,8 @@ void lzss(byte *rbuf, size_t len, buf &w)
         }
 
         // write keybyte and writebuffer to window buffer
-        push(w, &keybyte, 1);
-        push(w, wrt.mem, wrt.len);
+        push(r, &keybyte, 1);
+        push(r, wrt.mem, wrt.len);
 
          // print percentage
         printf("\rcompressing %.1f%%", (double)i*100.0/len);

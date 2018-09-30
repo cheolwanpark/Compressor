@@ -11,3 +11,8 @@ ADD_EXECUTABLE (
     Compress
     src/compress.cpp
 )
+
+ADD_EXECUTABLE (
+    huffman_test
+    src/huffman.cpp
+)
