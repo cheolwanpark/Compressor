@@ -14,8 +14,8 @@ void decompress_lzss(const char *src, const char *dst);
 
 void push(buf &buf, byte* data, size_t len);
 const char *LZSS_HEADER_SYMBOL = "CLSS";
-void lzss(FILE *f, size_t len, buf &w);
-void dlzss(FILE *f, size_t len, buf &d);
+void lzss(byte *rbuf, size_t len, buf &w);
+void dlzss(byte *rbuf, size_t len, buf &d);
 const char *helpstr();
 
 int main(int argc, char *argv[])
@@ -30,13 +30,13 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("invalid options\n");
+            printf("invalid option, use 'Compress help'\n");
             exit(-1);
         }
     }
     
 
-    if(!strcmp(argv[1], "compress"))
+    if(!strcmp(argv[1], "c"))
     {
         // check compress method
         if(!strcmp(argv[2], "lzss"))
@@ -48,7 +48,7 @@ int main(int argc, char *argv[])
             printf("invalid compress method\n");
         }
     }
-    else if(!strcmp(argv[1], "decompress"))
+    else if(!strcmp(argv[1], "d"))
     {
         // check compress method
         if(!strcmp(argv[2], "lzss"))
@@ -62,18 +62,14 @@ int main(int argc, char *argv[])
     }
     else
     {
-        printf("invalid option\n");
+        printf("invalid option, use 'Compress help'\n");
+        exit(-1);
     }
     return 0;
 }
 
 void compress_lzss(const char *src, const char *dst)
 {
-    // window buffer for lzss
-    buf w = {0, 0, 0};
-    w.mem = (byte*)malloc((w.max=32*1024));
-    memset(w.mem, 0, w.max);
-
     // open src file
     FILE *f = fopen(src, "rb");
     size_t fs = 0;
@@ -81,15 +77,24 @@ void compress_lzss(const char *src, const char *dst)
     fs = ftell(f);
     rewind(f);
     printf("src file : %s\nfilesize : %lu\n", src, fs);
+    
+    // ready result buffer for lzss
+    buf w = {0, 0, 0};
+    w.mem = (byte*)malloc((w.max=32*1024));
+    memset(w.mem, 0, w.max);
+    push(w, (byte*)LZSS_HEADER_SYMBOL, 4);
+    push(w, (byte*)&fs, 8);
+    // read buffer
+    byte *rbuf = (byte*)malloc(fs);
+    fread(rbuf, 1, fs, f);
+    fclose(f); f=0;
 
     // compress
-    lzss(f, fs, w);
-    fclose(f); f=0;
+    lzss(rbuf, fs, w);
+    free(rbuf); rbuf=0;
 
     // write compressed data to dst file
     f = fopen(dst, "wb");
-    fwrite(LZSS_HEADER_SYMBOL, 1, 4, f);
-    fwrite(&fs, 8, 1, f);
     fwrite(w.mem, 1, w.len, f);
     printf("compressed %ul -> %ul\n", fs, ftell(f));
     fclose(f);
@@ -99,6 +104,8 @@ void compress_lzss(const char *src, const char *dst)
 
 void decompress_lzss(const char *src, const char *dst)
 {
+    buf decode = {0, 0, 0};
+
     // open src file
     FILE *f = fopen(src, "rb");
     if(!f)
@@ -111,11 +118,15 @@ void decompress_lzss(const char *src, const char *dst)
     fs = ftell(f);
     rewind(f);
     printf("src file : %s\nfilesize : %lu\n", src, fs);
+
+    // read buffer
+    byte *rbuf = (byte*)malloc(fs);
+    fread(rbuf, 1, fs, f);
+    fclose(f); f=0;
     
     // decode
-    buf decode = {0, 0, 0};
-    dlzss(f, fs, decode);
-    fclose(f); f=0;
+    dlzss(rbuf, fs, decode);
+    free(rbuf); rbuf=0;
 
     // write to dst file
     f = fopen(dst, "wb");
@@ -143,7 +154,7 @@ void push(buf &buf, byte* data, size_t len)
     buf.len += len;
 }
 
-void lzss(FILE *f, size_t len, buf &w)
+void lzss(byte *rbuf, size_t len, buf &w)
 {
     const int MIN_COMPRESS_LEN = 4;
 
@@ -152,10 +163,6 @@ void lzss(FILE *f, size_t len, buf &w)
         unsigned short p; 
         unsigned short l;
     } d, t;
-
-    // read buffer
-    byte *rbuf = (byte*)malloc(len);
-    fread(rbuf, 1, len, f);
 
     // variable for process
     long long i=0, find=0, j=0, k=0;
@@ -227,17 +234,15 @@ void lzss(FILE *f, size_t len, buf &w)
         printf("\rcompressing %.1f%%", (double)i*100.0/len);
     }
     printf("\n");
-    free(rbuf);
     free(wrt.mem);
 }
 
-void dlzss(FILE *f, size_t len, buf &d)
+void dlzss(byte *rbuf, size_t len, buf &d)
 {
     // read header 
     size_t *cnkpos = 0;
-    char symbol[4] = {0,};
+    char *symbol = (char*)rbuf;
 
-    fread(symbol, 1, 4, f);
     for(int i=0; i<4; ++i)
     {
         if(symbol[i] != LZSS_HEADER_SYMBOL[i])
@@ -249,8 +254,7 @@ void dlzss(FILE *f, size_t len, buf &d)
     }
 
     // read and decompress data
-    size_t dlen=0;
-    fread(&dlen, 8, 1, f);
+    size_t dlen=*(size_t*)(rbuf+4);
     byte *decode = (byte*)malloc(dlen);
     if(!decode)
     {
@@ -258,22 +262,22 @@ void dlzss(FILE *f, size_t len, buf &d)
         exit(-1);
     }
     unsigned short p=0, l=0;
-    for(size_t i=0, keybyte = 0, di=0, orgdi=0; !feof(f);)
+    for(size_t i=12, keybyte = 0, di=0, orgdi=0; i<len;)
     {
-        fread(&keybyte, 1, 1, f);
-        for(size_t j=0; j<8 && !feof(f); ++j)
+        keybyte = rbuf[i++];
+        for(size_t j=0; j<8 && i<len; ++j)
         {
             if(keybyte & (1<<j))
             {
-                fread(&p, 2, 1, f);
-                fread(&l, 2, 1, f);
+                p = *(unsigned short*)(rbuf+i); i+=2;
+                l = *(unsigned short*)(rbuf+i); i+=2;
                 orgdi = di;
                 for(size_t k=0; k<l; ++k)
                     decode[di++] = decode[orgdi-p+k];
             }
             else
             {
-                fread(&decode[di++], 1, 1, f);
+                decode[di++] = rbuf[i++];
             }
         }
         printf("\rdecompressing %.1f%%", (double)di*100.0/dlen);
@@ -290,7 +294,8 @@ const char *helpstr()
         "usage : Compress.exe <operation> <compress method> <in-file> <out-file>\n"
         "\n"
         "- operations\n"
-        "compress : compressing\ndecompress : decompressing\n"
+        "c : compressing\n"
+        "d : decompressing\n"
         "\n"
         "- compress method\n"
         "lzss : https://en.wikipedia.org/wiki/LZ77_and_LZ78\n"
