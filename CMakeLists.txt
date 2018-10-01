@@ -13,6 +13,11 @@ ADD_EXECUTABLE (
 )
 
 ADD_EXECUTABLE (
-    huffman_test
+    huffman
     src/huffman.cpp
+)
+
+ADD_EXECUTABLE (
+    lzss
+    src/lzss.cpp
 )

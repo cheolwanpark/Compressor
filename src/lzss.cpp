@@ -20,52 +20,21 @@ const char *LZSS_HEADER_SYMBOL = "CLSS";
 void lzss(byte *rbuf, size len, buf *r);
 void dlzss(byte *rbuf, size len, buf *d);
 
-const char *helpstr();
-
 int main(int argc, char *argv[])
 {
-    // check options
-    if(2 == argc && !strcmp(argv[1], "help"))
+    if(argc !=4)
     {
-        printf("%s\n", helpstr());
-        return 0;
-    }
-    else if(5 != argc)
-    {
-        printf("invalid option, use 'Compress help'\n");
-        exit(-1);
+        return -1;
     }
 
     if(!strcmp(argv[1], "c"))
     {
-        // check compress method
-        if(!strcmp(argv[2], "lzss"))
-        {
-            compress_lzss(argv[3], argv[4]);
-        }
-        else
-        {
-            printf("invalid compress method\n");
-        }
+        compress_lzss(argv[2], argv[3]);
     }
     else if(!strcmp(argv[1], "d"))
     {
-        // check compress method
-        if(!strcmp(argv[2], "lzss"))
-        {
-            decompress_lzss(argv[3], argv[4]);
-        }
-        else
-        {
-            printf("invalid compress method\n");
-        }
+        decompress_lzss(argv[2], argv[3]);
     }
-    else
-    {
-        printf("invalid option, use 'Compress help'\n");
-        exit(-1);
-    }
-    return 0;
 }
 
 void pushbuf(buf *buf, byte* data, size len)
@@ -295,19 +264,4 @@ void dlzss(byte *rbuf, size len, buf *d)
 
     d->mem = decode;
     d->len = d->max = dlen;
-}
-
-const char *helpstr()
-{
-    return (
-        "usage : Compress.exe <operation> <compress method> <in-file> <out-file>\n"
-        "\n"
-        "- operations\n"
-        "c : compressing\n"
-        "d : decompressing\n"
-        "\n"
-        "- compress method\n"
-        "lzss : https://en.wikipedia.org/wiki/LZ77_and_LZ78\n"
-        "\n"
-    );
 }
