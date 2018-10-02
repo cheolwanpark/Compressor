@@ -6,13 +6,13 @@
 2. run 'make'
 
 ## Usage
-Compress.exe <operation> <compress method> <in-file> <out-file>
+    Compress.exe <operation> <compress method> <in-file> <out-file>
 
 * operations
   * c : compressing
   * d : decompressing
 
 * compress method
-  * lzss : https://en.wikipedia.org/wiki/LZ77_and_LZ78
-  * huffman : https://en.wikipedia.org/wiki/Huffman_coding
+  * lzss : <https://en.wikipedia.org/wiki/LZ77_and_LZ78>
+  * huffman : <https://en.wikipedia.org/wiki/Huffman_coding>
   * both : lzss + huffman
