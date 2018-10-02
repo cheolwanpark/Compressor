@@ -16,3 +16,6 @@
   * lzss : <https://en.wikipedia.org/wiki/LZ77_and_LZ78>
   * huffman : <https://en.wikipedia.org/wiki/Huffman_coding>
   * both : lzss + huffman
+
+## Source Code Image
+<img src="codeimg.png" width="685" height="964">
