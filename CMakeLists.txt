@@ -11,13 +11,3 @@ ADD_EXECUTABLE (
     Compress
     src/compress.cpp
 )
-
-ADD_EXECUTABLE (
-    huffman
-    src/huffman.cpp
-)
-
-ADD_EXECUTABLE (
-    lzss
-    src/lzss.cpp
-)
