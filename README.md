@@ -18,4 +18,4 @@
   * both : lzss + huffman
 
 ## Source Code Image
-<img src="codeimg.png" width="685" height="964">
+![Alt text](codeimg.jpg)
