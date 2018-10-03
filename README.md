@@ -18,4 +18,5 @@
   * both : lzss + huffman
 
 ## Source Code Image
+>src/Compress.cpp
 ![Alt text](codeimg.jpg)
