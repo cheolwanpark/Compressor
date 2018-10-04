@@ -8,13 +8,13 @@
 #define st struct
 #define un unsigned
 
-      td char ch;td    const char cch;    td un     char bt;     td un int ui;    td un short    uii;td  un long     long  sz; td    long long li;
-      td  double db    ;st b{bt *m; sz    l;sz mx   ;}; void     pb(b*,bt*,sz)    ;void cml (    cch*,cch*);void     dcl(cch*,cch    *);cch *lhsy=
-      "LZS"            "S" ;      void    lz(bt *, sz,b  *);     void     dlz(    bt*     ,sz    ,b*);               void             cmh(
-      cch*,            cch*);     void    dch(  cch*,    cch     * );     cch*    hfsy = "HF"    "MN";void hf(bt     *,sz,b*);void   dhf(bt*, b*);
-      cch*             btsy =     "BT"    "LH"  ;void    cmb     (cch*,cch *);    void  dcb      (cch*                       ,cch*           );cch      
-      *hp();int main   (int ac,ch*a[])    {if(  2==ac    &&!     scm(             a[1],  "he"    "lp" ) ){pt("%s"    "\n",hp());e(   0);}else if(5
-      !=ac){pt("inv"   "alid option, "    "us"  "e '"    "C"     "om"             "pre"  "ss"    " help'\n");e(-1    );}if(!scm(a[   1],"c")){if(!
+                      td char ch;td    const char cch;    td un     char bt;     td un int ui;    td un short    uii;td  un long     long  sz; td    long long li;
+                      td  double db    ;st b{bt *m; sz    l;sz mx   ;}; void     pb(b*,bt*,sz)    ;void cml (    cch*,cch*);void     dcl(cch*,cch    *);cch *lhsy=
+                      "LZS"            "S" ;      void    lz(bt *, sz,b  *);     void     dlz(    bt*     ,sz    ,b*);               void             cmh(
+                      cch*,            cch*);     void    dch(  cch*,    cch     * );     cch*    hfsy = "HF"    "MN";void hf(bt     *,sz,b*);void   dhf(bt*, b*);
+                      cch*             btsy =     "BT"    "LH"  ;void    cmb     (cch*,cch *);    void  dcb      (cch*                       ,cch*           );cch      
+                      *hp();int main   (int ac,ch*a[])    {if(  2==ac    &&!     scm(             a[1],  "he"    "lp" ) ){pt("%s"    "\n",hp());e(   0);}else if(5
+                      !=ac){pt("inv"   "alid option, "    "us"  "e '"    "C"     "om"             "pre"  "ss"    " help'\n");e(-1    );}if(!scm(a[   1],"c")){if(!
               
               
                                 scm(a[2],"lzss")){cml(a[3],a[4]);}else if(!scm(a[2],"huffman")){
@@ -91,14 +91,14 @@
                                                                                   "fman\n");                      b d0={0,0,0};dhf(r+4,&d0);free(r);r=0;pt(   
                                                                                     
                                                                                     
-      "huffman complete\n"      );pt("lz"     "ss\n");b d1={0,0,0}    ;dlz(d0.    m,d0.l,&d1);free(d0.m
-      );pt("lzss complete"      "\n");f=      fopen(d,"wb");if(!f)    {pt("fa"    "iled create %s\n",d)
-      ;e(-1          ) ; }      fwrite (      d1.m,         1,d1.l    ,f);pt (    "deco"         "mpre"
-      "sse"          "d "       "%lld -"      "> "          "%ld\n"   ,   fs ,    ftell(         f ) );
-      fclose        (f);f=      0;free(d1     .m);          }cch*hp   (   ) {     return         ("usa"
-      "ge :"        " Com"      "press.e"     "xe"          " <ope"   "ratio"     "n> <"         "comp"
-      "ress"        " met"      "hod> <"      "in"          "-file"   "> <ou"     "t-fi"         "le>\n"
-      "\n- "        "oper"      "ations"      "\n"          "c : c"   "ompre"     "ssin"         "g\nd "
-      ": decompressing\n"       "\n- co"      "mpress method\nlzss"   " : ht"     "tps://en.wikipedia.o"
-      "rg/wiki/LZ77_and_"       "LZ78\n"      "huffman : https://e"   "n.wik"     "ipedia.org/wiki/Huff"
-      "man_coding\nboth "       ": lzss"      " + huffman\n\n");}       //              Compress!!
+                                            "huffman complete\n"      );pt("lz"     "ss\n");b d1={0,0,0}    ;dlz(d0.    m,d0.l,&d1);free(d0.m
+                                            );pt("lzss complete"      "\n");f=      fopen(d,"wb");if(!f)    {pt("fa"    "iled create %s\n",d)
+                                            ;e(-1          ) ; }      fwrite (      d1.m,         1,d1.l    ,f);pt (    "deco"         "mpre"
+                                            "sse"          "d "       "%lld -"      "> "          "%ld\n"   ,   fs ,    ftell(         f ) );
+                                            fclose        (f);f=      0;free(d1     .m);          }cch*hp   (   ) {     return         ("usa"
+                                            "ge :"        " Com"      "press.e"     "xe"          " <ope"   "ratio"     "n> <"         "comp"
+                                            "ress"        " met"      "hod> <"      "in"          "-file"   "> <ou"     "t-fi"         "le>\n"
+                                            "\n- "        "oper"      "ations"      "\n"          "c : c"   "ompre"     "ssin"         "g\nd "
+                                            ": decompressing\n"       "\n- co"      "mpress method\nlzss"   " : ht"     "tps://en.wikipedia.o"
+                                            "rg/wiki/LZ77_and_"       "LZ78\n"      "huffman : https://e"   "n.wik"     "ipedia.org/wiki/Huff"
+                                            "man_coding\nboth "       ": lzss"      " + huffman\n\n");}     ///////     CCoommpprreessss!!!!!!
