@@ -19,4 +19,4 @@
 
 ## Source Code Image
 >src/Compress.cpp
-![Alt text](codeimg.jpg)
+![Alt text](./codeimg.jpg)
